@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from math import sqrt
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -27,22 +28,6 @@ def ka_window_reverse(windows, window_size, H, W):
     x = windows.contiguous().view(B, H // window_size, W // window_size, -1, window_size, window_size)
     x = x.permute(0, 1, 4, 2, 5, 3).contiguous().view(B, H*W, -1)
     return x
-
-
-class SELayer_KA(nn.Module):
-    def __init__(self, channel):
-        super().__init__()
-        self.se = nn.Sequential(nn.AdaptiveAvgPool2d((1, 1)),
-                                nn.Conv2d(channel, channel // 16 if channel >= 64 else channel, kernel_size=1),
-                                nn.ReLU(),
-                                nn.Conv2d(channel // 16 if channel >= 64 else channel, channel, kernel_size=1),
-                                nn.Sigmoid(), )
-
-    def forward(self, x):
-        channel_weight = self.se(x)
-        x = x * channel_weight
-        return x
-    
 
 class WinKernel_Reweight(nn.Module):
     def __init__(self, dim, win_num=4):
@@ -94,41 +79,8 @@ class WinKernel_Reweight(nn.Module):
         return kernels
     
 
-class ConvLayer(nn.Module):
-    def __init__(self, dim, kernel_size=3, stride=1, padding=1, groups=4, win_num=4, k_in=False):
-        super().__init__()
 
-        self.dim = dim
-        self.win_num = win_num
-        self.kernel_size = kernel_size
-        self.stride = stride
-        self.padding = padding
-        self.groups = groups
-        if not k_in:
-            self.params = nn.Parameter(torch.randn(win_num*dim, dim, kernel_size, kernel_size), requires_grad=True)
-        else:
-            self.params = None
-
-    def forward(self, x, kernels=None, groups=None):
-        '''
-        x:  bs, win_num*c, wh, ww
-        kernels:  None
-
-        or
-
-        x:  bs, win_num*c, h, w
-        kernels:  c*win_num, c, k_size, k_size
-        '''
-
-        if kernels is None:
-            x = F.conv2d(x, self.params, stride=self.stride, padding=self.padding, groups=self.groups)
-        else:
-            x = F.conv2d(x, kernels, stride=self.stride, padding=self.padding, groups=groups)
-
-        return x, self.params
-
-
-class KernelAttention(nn.Module):
+class WinReweight(nn.Module):
     """
     第一个分组卷积产生核，然后计算核的自注意力，调整核，第二个分组卷积产生输出，skip connection
     
@@ -190,12 +142,10 @@ class KernelAttention(nn.Module):
         x_windows = self.gelu(x_windows)
         x_windows = x_windows.transpose(1, 2).reshape(B, -1, 1, 1)
         x_windows = self.linear2(x_windows)
-        # weight:  bs, win_num, 1, 1, 1, 1
-        weight = self.sigmoid(x_windows).unsqueeze(-1).unsqueeze(-1)
+        # weight:  bs, win_num, 1, 1
+        weight = self.sigmoid(x_windows)
 
-
-
-        return x
+        return weight
 
 
 
@@ -231,7 +181,7 @@ class ResBlock(nn.Module):
 
 
 class ResNet18(nn.Module):
-    def __init__(self, item=10):
+    def __init__(self, item=10, win_size=2):
         super(ResNet18, self).__init__()
         self.Conv = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3),
@@ -249,13 +199,23 @@ class ResNet18(nn.Module):
             # [b,512,h,w]=>[b,512,1,1]
             nn.AdaptiveAvgPool2d([1, 1])
         )
-        self.linear = nn.Sequential(
-            nn.Flatten(),
-            nn.Dropout(0.5),
-            nn.Linear(512, item),
-        )
+
+        self.flatten = nn.Flatten()
+        self.dropout = nn.Dropout(0.5)
+        self.reweight = WinReweight(dim=512, win_size=2)
+        self.linear1 = nn.Linear(512, item)
 
     def forward(self, x):
+
+        # b, 512, h, w
         x = self.Conv(x)
-        x = self.linear(x)
+
+        weight = self.reweight(x)
+
+        x_flatten = self.flatten(x)
+        x_flatten = self.dropout(x_flatten)
+        
+        x = self.linear1(x_flatten)
+        x = x * weight
+        x = self.linear2(x)
         return x

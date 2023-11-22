@@ -71,6 +71,8 @@ loss_fn = loss_fn.to(device)
 
 # 优化器
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+# scheduler = lr_scheduler.ExponentialLR(optimizer, gamma=0.3)
+scheduler = lr_scheduler.StepLR(optimizer, 50, gamma=0.1)
 
 #网络训练&测试
 
@@ -80,7 +82,7 @@ total_train_step = 0
 best_val_accuracy = 0
 best_accuracy = 0
 # 训练的轮数
-epoch = 3
+epoch = 300
 #tensorboard
 writer = SummaryWriter("logs")
 for i in range(epoch):
@@ -134,6 +136,28 @@ for i in range(epoch):
         best_val_accuracy = epoch_val_accuracy  # 判断并更新最高正确率
         torch.save(model.state_dict(),
                    "model_best.pth")  # 将测试集表现最佳的模型权重保存起来
+        
+    scheduler.step()
+
+    if (i+1) % 50 == 0:
+        model.eval()
+        total_test_loss = 0
+        total_test_right = 0   
+        with torch.no_grad():
+            for datas in test_loader:
+                data, targets = datas
+                data = data.to(device)
+                targets = targets.to(device)
+                output = model(data)
+                test_loss = loss_fn(output, targets)  # 测试集上的loss
+                total_test_loss = total_test_loss + test_loss.item()
+                test_right = (output.argmax(1) == targets).sum().item()
+                total_test_right = total_test_right + test_right
+
+        total_test_accuracy = total_test_right / len(cifar10_test)
+        print("\n测试集正确率：", total_test_accuracy)
+        print("\n")
+
 
 model.eval()
 total_test_loss = 0
@@ -151,3 +175,4 @@ with torch.no_grad():
 
 total_test_accuracy = total_test_right / len(cifar10_test)
 print("\n测试集正确率：", total_test_accuracy)
+print("\n")

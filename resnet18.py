@@ -57,5 +57,6 @@ class ResNet18(nn.Module):
 
     def forward(self, x):
         x = self.Conv(x)
+        print(x.shape)
         x = self.linear(x)
         return x
