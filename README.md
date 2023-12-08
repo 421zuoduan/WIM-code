@@ -1,22 +1,13 @@
-# Window Interaction Uformer
+# A  Novel Window-Interaction Module Based on W-MSA
 
 ## Project for Statistical Learning Course
-[Ruo-Chen Cui](https://github.com/421zuoduan)
+<!-- [Ruochen Cui](https://github.com/421zuoduan)  [Mingjun Ni](https://github.com/TsukiRinA) -->
 
-> **Abstract:** *Our project is based on Restormer, (write later)* 
+> **Abstract:** *W-MSA proposed by Swin Transformer has limitations in facilitating information interaction between windows. To address this, we introduce a module that utilizes convolution to achieve inter-window information interaction across different regions. Experiments demonstrate that our proposed module, when combined with W-MSA in a dual-branch structure, outperforms the simple W-MSA. In the deraining task conducted on the Uformer, we observe a 0.14dB improvement in performance. Our code can be found at https://github.com/421zuoduan/WIM-code.* 
 <hr />
 
 
 This repository contains the code used to conduct the experiments for our ICLR 2024 Tiny Paper submission for the paper titled "Window Interaction Within Swin Transformer".
-
-
-## Related Work
-
-SENet :  [Paper](https://arxiv.org/pdf/1709.01507.pdf) | [Code](https://github.com/hujie-frank/SENet)
-
-Uformer : [Paper](https://www.ijcai.org/proceedings/2022/0205.pdf) | [Code](https://github.com/ZhendongWang6/Uformer)
-
-Our training framework : [Code](https://github.com/XiaoXiao-Woo/derain)
 
 
 ## Our Work
@@ -48,7 +39,7 @@ The dataset employed in this study is Rain100L, which comprises 200 image pairs 
 
 ## Training Setting
 
-The learning rate is typically set to 1e-4, and the AdamW optimizer is employed with a random seed set to 1. The input image size for the model is 128*128, and both L1 loss and SSIM loss are utilized as loss functions. We have trained models for 1000 epochs. Details can be found in `configs/`
+The learning rate is typically set to 1e-4, and the AdamW optimizer is employed with a random seed set to 1. The input image size for the model is 128*128, and both L1 loss and SSIM loss are utilized as loss functions. We have trained models for 1000 epochs. Details can be found in `configs/option_model.py`
 
 
 ## Training and Evaluation
