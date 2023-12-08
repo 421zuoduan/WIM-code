@@ -55,10 +55,10 @@ Details can be found [here](https://github.com/XiaoXiao-Woo/derain).
 
 ### Evaluation of Models
 
-|Model|PSNR|SSIM|
+|Model|PSNR|SSIM|Params|FLOPs|
 |-|-|-|-|-|
-|Uformer|38.67999|0.97879|20.628M|10.308G|
-|Ours|38.820|0.97947|24.667M|13.548G|
+|Uformer|38.680|0.9788|20.628M|10.308G|
+|Ours|**38.820**|**0.9795**|24.667M|13.548G|
 
 
 
