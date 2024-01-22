@@ -2,7 +2,7 @@
 
 <!-- [Ruochen Cui](https://github.com/421zuoduan)  [Mingjun Ni](https://github.com/TsukiRinA) -->
 
-> **Abstract:** *W-MSA proposed by Swin Transformer has limitations in facilitating information interaction between windows. To address this, we introduce a module that utilizes convolution to achieve inter-window information interaction across different regions. Experiments demonstrate that our proposed module, when combined with W-MSA in a dual-branch structure, outperforms the simple W-MSA. In the deraining task conducted on the Uformer, we observe a 0.14dB improvement in performance. Our code can be found at https://github.com/421zuoduan/WIM-code.* 
+> **Abstract:** *W-MSA proposed by Swin Transformer has limitations in facilitating information interaction between windows. To address this, we introduce a module that utilizes convolution to achieve inter-window information interaction across different regions. Experiments demonstrate that our proposed module, when combined with W-MSA in a dual-branch structure, outperforms the simple W-MSA. In the deraining task conducted on the Uformer, we observe a 0.14dB improvement in performance. Our code can be found at <!--https://github.com/421zuoduan/WIM-code-->.* 
 <hr />
 
 
@@ -51,7 +51,7 @@ The learning rate is typically set to 1e-4, and the AdamW optimizer is employed 
 - Training. Revise and run `python run_derain.py` for training
 - Evaluation. Revise and run `python run_derain_test.py` for testing.
 
-Details can be found [here](https://github.com/XiaoXiao-Woo/derain).
+<!--Details can be found [here](https://github.com/XiaoXiao-Woo/derain).-->
 
 
 
@@ -65,7 +65,7 @@ Details can be found [here](https://github.com/XiaoXiao-Woo/derain).
 |Ours-L|**38.820**|**0.9795**|24.667M|13.548G|
 |Ours-T|**38.755**|**0.9791**|20.416M|9.82G|
 
-Here *Ours-T* denotes model with less params, *Ours-L* denotes model with more params.
+Here *Ours-T* denotes model with less params, *Ours-L* denotes model with more params. The parameters of the model will be released later.
 
 
 **Note**
