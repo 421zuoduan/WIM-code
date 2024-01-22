@@ -2,7 +2,7 @@
 
 <!-- [Ruochen Cui](https://github.com/421zuoduan)  [Mingjun Ni](https://github.com/TsukiRinA) -->
 
-> **Abstract:** *W-MSA proposed by Swin Transformer has limitations in facilitating information interaction between windows. To address this, we introduce a module that utilizes convolution to achieve inter-window information interaction across different regions. Experiments demonstrate that our proposed module, when combined with W-MSA in a dual-branch structure, outperforms the simple W-MSA. In the deraining task conducted on the Uformer, we observe a 0.14dB improvement in performance. Our code can be found at <!--https://github.com/421zuoduan/WIM-code-->.* 
+> **Abstract:** *W-MSA proposed by Swin Transformer has limitations in facilitating information interaction between windows. To address this, we introduce a module that utilizes convolution to achieve inter-window information interaction across different regions. Experiments demonstrate that our proposed module, when combined with W-MSA in a dual-branch structure, outperforms the simple W-MSA. In the deraining task conducted on the Uformer, we observe a 0.14dB improvement in performance. <!--Our code can be found at https://github.com/421zuoduan/WIM-code.-->* 
 <hr />
 
 
